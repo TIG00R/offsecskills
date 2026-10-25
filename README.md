@@ -10,6 +10,8 @@ Defensive, authorized use only. Read-only by default, every claim cited to
 
 ## Install
 
+### Option 1 — Marketplace (recommended, Claude Code)
+
 ```bash
 claude plugin marketplace add tig00r/offsecskills
 claude plugin install secure-code-review@offsecskills
@@ -21,9 +23,54 @@ Then, in a session, review the current diff:
 /secure-code-review
 ```
 
-(Plugin skills are namespaced, so `/secure-code-review:secure-code-review` always
-works; the bare `/secure-code-review` works unless another command takes the
-name.)
+Plugin skills are namespaced, so `/secure-code-review:secure-code-review` always
+works; the bare `/secure-code-review` works unless another command takes the name.
+`claude plugin update secure-code-review` pulls later changes.
+
+### Option 2 — Copy the skill into Claude Code's skills folder
+
+The skill is a self-contained folder (`SKILL.md` + `references/`), so you can drop
+it straight into a skills directory instead of using the marketplace.
+
+**Personal — available in all your projects on this machine:**
+
+```bash
+git clone https://github.com/tig00r/offsecskills
+mkdir -p ~/.claude/skills
+cp -r offsecskills/plugins/secure-code-review/skills/secure-code-review \
+  ~/.claude/skills/secure-code-review
+```
+
+**Project — just this repo (commit it to share with your team):**
+
+```bash
+mkdir -p .claude/skills
+cp -r /path/to/offsecskills/plugins/secure-code-review/skills/secure-code-review \
+  .claude/skills/secure-code-review
+```
+
+Invoke it as `/secure-code-review`. Claude Code picks up a new personal/project
+skill within the session; if it doesn't appear, restart or run `/reload-skills`.
+Updating is just re-copying the folder (`git pull` first). Installed this way it is
+a plain skill, not a plugin, so it has no `plugin-name:` prefix.
+
+### Option 3 — System-wide / other harnesses
+
+The skill follows the open [Agent Skills](https://agentskills.io) standard — plain
+`SKILL.md` + reference files, no bundled code and no runtime injection — so it is
+portable beyond a single Claude Code install:
+
+- **Your whole claude.ai account** (Cowork, cloud, and signed-in terminal
+  sessions): upload the `secure-code-review/` folder in your claude.ai **Skills**
+  settings. Uploads accept only the spec fields (`name`, `description`, `license`,
+  `compatibility`, `metadata`, `allowed-tools`), so remove the Claude-Code-only
+  `argument-hint:` line from `SKILL.md` before uploading.
+- **Any Agent Skills–compatible harness**: point the tool at the
+  `secure-code-review/` folder, or copy it into that tool's skills location. The
+  Markdown body and references are harness-agnostic; `argument-hint` is ignored
+  elsewhere.
+- **Every user on a machine** (Claude Code, admin): place the folder in
+  `.claude/skills/` inside your [managed-settings directory](https://code.claude.com/docs/en/managed-settings).
 
 ## secure-code-review
 
