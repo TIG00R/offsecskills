@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "offsecskills",
+  "description": "Security skills for Claude Code: deep, source-cited code review and more.",
+  "owner": {
+    "name": "TIG00R",
+    "url": "https://github.com/tig00r/offsecskills"
+  },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "secure-code-review",
+      "source": "./plugins/secure-code-review",
+      "displayName": "SASTSkill — Secure Code Review",
+      "description": "Security-first source code review for any language or app type. Builds and confirms a role matrix, hunts broken access control and business-logic abuse, maps OWASP Top 10:2025 / API Top 10 / ASVS 5.0 / CWE Top 25 / MASVS / Agentic, and optionally correlates an authorized live app back to code. Read-only by default.",
+      "category": "security",
+      "tags": [
+        "security",
+        "code-review",
+        "appsec",
+        "sast",
+        "dast",
+        "owasp",
+        "cwe",
+        "asvs",
+        "access-control",
+        "business-logic"
+      ]
+    }
+  ]
+}

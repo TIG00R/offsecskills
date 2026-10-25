@@ -1,0 +1,42 @@
+# OS / editor
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node (only if a future skill needs it)
+node_modules/
+
+# Review artifacts — never commit a real target's findings or recon output
+*.report.md
+*.findings.json
+scan-output/
+recon-output/
+evals/**/results/
+
+# Local dev artifacts — kept local, not shipped. Published skills are prompt +
+# references only; helper scripts and the eval suite stay out of the repo.
+plugins/secure-code-review/skills/secure-code-review/scripts/
+plugins/secure-code-review/skills/secure-code-review/evals/
+
+# Dev / governance / CI — kept local, not needed to USE the installed skill.
+# The published package is only the manifests, SKILL.md, references, README, LICENSE.
+CLAUDE.md
+CONSTITUTION.md
+CONTRIBUTING.md
+.github/
+
+# Secrets — never commit these
+*.pem
+*.key
+.env
+.env.*
+secrets.*

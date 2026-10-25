@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "secure-code-review",
+  "version": "0.1.0",
+  "description": "Security-first source code review for any language or app type, with role-matrix access control, business-logic abuse, OWASP/CWE/ASVS/MASVS coverage, and optional authorized live-app correlation. Read-only by default.",
+  "author": {
+    "name": "TIG00R"
+  },
+  "homepage": "https://github.com/tig00r/offsecskills",
+  "repository": "https://github.com/tig00r/offsecskills",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "code-review",
+    "appsec",
+    "sast",
+    "owasp",
+    "cwe",
+    "asvs"
+  ]
+}
