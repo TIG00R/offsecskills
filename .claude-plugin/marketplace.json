@@ -28,6 +28,44 @@
         "access-control",
         "business-logic"
       ]
+    },
+    {
+      "name": "cloud-pentest",
+      "source": "./plugins/cloud-pentest",
+      "displayName": "Cloud Pentest — AWS / Azure / GCP",
+      "description": "Authorized cloud penetration testing for AWS, Azure / Entra ID, GCP, and Kubernetes/containers. Phased engagement with a written-authorization gate, IAM/resource enumeration, privilege-escalation and lateral-movement path analysis, and a findings report mapped to remediation. Authorization-gated and least-impact.",
+      "category": "security",
+      "tags": [
+        "security",
+        "pentest",
+        "cloud",
+        "aws",
+        "azure",
+        "gcp",
+        "kubernetes",
+        "iam",
+        "privilege-escalation",
+        "lateral-movement"
+      ]
+    },
+    {
+      "name": "wifi-pentest",
+      "source": "./plugins/wifi-pentest",
+      "displayName": "Wi-Fi Pentest — 802.11 / WPA / Enterprise",
+      "description": "Authorized Wi-Fi / wireless penetration testing across 802.11 OPN/OWE/WEP/WPA/WPA2/WPA3-SAE and WPA-Enterprise (802.1X/EAP). Phased engagement with an RF-authorization gate, monitor-mode recon, attack selection by encryption type, offline cracking, and a findings report mapped to remediation. Authorization-gated and least-impact.",
+      "category": "security",
+      "tags": [
+        "security",
+        "pentest",
+        "wifi",
+        "wireless",
+        "802.11",
+        "wpa2",
+        "wpa3",
+        "eap",
+        "evil-twin",
+        "aircrack-ng"
+      ]
     }
   ]
 }

@@ -1,12 +1,20 @@
 # offsecskills
 
 Security skills for [Claude Code](https://code.claude.com/docs/en/skills). A
-marketplace of focused, source-cited skills for security review. The first is
-**`secure-code-review`** — a deep, security-first source-code review that works
-across languages and application types.
+marketplace of focused, source-cited skills for security review and authorized
+assessment:
 
-Defensive, authorized use only. Read-only by default, every claim cited to
-`file:line`, and no invented CWE/OWASP/ASVS IDs.
+- **`secure-code-review`** — deep, security-first source-code review across
+  languages and application types.
+- **`cloud-pentest`** — authorized cloud penetration testing for AWS, Azure /
+  Entra ID, GCP, and Kubernetes/containers.
+- **`wifi-pentest`** — authorized Wi-Fi / wireless penetration testing across
+  802.11 OPN/OWE/WEP/WPA/WPA2/WPA3 and WPA-Enterprise (802.1X/EAP).
+
+Defensive, authorized use only. Every claim cited to its evidence, no invented
+CWE/OWASP/ASVS IDs, and no weaponized tooling. `secure-code-review` is read-only
+by default; the pentest skills are authorization-gated and least-impact — no
+live action without the owner's written authorization and a confirmed scope.
 
 ## Install
 
@@ -14,13 +22,35 @@ Defensive, authorized use only. Read-only by default, every claim cited to
 
 ```bash
 claude plugin marketplace add tig00r/offsecskills
+```
+
+```bash
 claude plugin install secure-code-review@offsecskills
+```
+
+```bash
+claude plugin install cloud-pentest@offsecskills
+```
+
+```bash
+claude plugin install wifi-pentest@offsecskills
 ```
 
 Then, in a session, review the current diff:
 
 ```text
 /secure-code-review
+```
+
+Or start an authorized assessment (each stops for scope + written authorization
+before any live action):
+
+```text
+/cloud-pentest aws
+```
+
+```text
+/wifi-pentest
 ```
 
 Plugin skills are namespaced, so `/secure-code-review:secure-code-review` always
