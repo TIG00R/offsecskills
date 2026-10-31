@@ -59,8 +59,11 @@ works; the bare `/secure-code-review` works unless another command takes the nam
 
 ### Option 2 — Copy the skill into Claude Code's skills folder
 
-The skill is a self-contained folder (`SKILL.md` + `references/`), so you can drop
-it straight into a skills directory instead of using the marketplace.
+Each skill is a self-contained folder (`SKILL.md` + `references/`), so you can
+drop any of them straight into a skills directory instead of using the
+marketplace. The examples below use `secure-code-review`; for another skill swap
+the name in the path (`plugins/cloud-pentest/skills/cloud-pentest`,
+`plugins/wifi-pentest/skills/wifi-pentest`).
 
 **Personal — available in all your projects on this machine:**
 
@@ -79,26 +82,25 @@ cp -r /path/to/offsecskills/plugins/secure-code-review/skills/secure-code-review
   .claude/skills/secure-code-review
 ```
 
-Invoke it as `/secure-code-review`. Claude Code picks up a new personal/project
+Invoke it as `/<skill-name>`. Claude Code picks up a new personal/project
 skill within the session; if it doesn't appear, restart or run `/reload-skills`.
 Updating is just re-copying the folder (`git pull` first). Installed this way it is
 a plain skill, not a plugin, so it has no `plugin-name:` prefix.
 
 ### Option 3 — System-wide / other harnesses
 
-The skill follows the open [Agent Skills](https://agentskills.io) standard — plain
+Each skill follows the open [Agent Skills](https://agentskills.io) standard — plain
 `SKILL.md` + reference files, no bundled code and no runtime injection — so it is
 portable beyond a single Claude Code install:
 
 - **Your whole claude.ai account** (Cowork, cloud, and signed-in terminal
-  sessions): upload the `secure-code-review/` folder in your claude.ai **Skills**
-  settings. Uploads accept only the spec fields (`name`, `description`, `license`,
+  sessions): upload a skill's folder in your claude.ai **Skills** settings.
+  Uploads accept only the spec fields (`name`, `description`, `license`,
   `compatibility`, `metadata`, `allowed-tools`), so remove the Claude-Code-only
   `argument-hint:` line from `SKILL.md` before uploading.
-- **Any Agent Skills–compatible harness**: point the tool at the
-  `secure-code-review/` folder, or copy it into that tool's skills location. The
-  Markdown body and references are harness-agnostic; `argument-hint` is ignored
-  elsewhere.
+- **Any Agent Skills–compatible harness**: point the tool at a skill's folder,
+  or copy it into that tool's skills location. The Markdown body and references
+  are harness-agnostic; `argument-hint` is ignored elsewhere.
 - **Every user on a machine** (Claude Code, admin): place the folder in
   `.claude/skills/` inside your [managed-settings directory](https://code.claude.com/docs/en/managed-settings).
 
@@ -170,34 +172,132 @@ ask. Live testing happens only inside your written authorization and agreed
 scope — never against out-of-scope hosts, and never with requests that harm data
 or availability. Secrets are redacted (first four characters plus location).
 
+## cloud-pentest
+
+Authorized penetration testing of a cloud environment — AWS, Azure / Entra ID,
+GCP, and the Kubernetes/containers on top. The cloud's perimeter is the IAM
+graph, so the work is mostly *enumerate the identities and trust relationships,
+then find the path to admin or to the data*.
+
+It is **not** a code reviewer, and **not** for targets you cannot prove you are
+authorized to test.
+
+### What makes it different
+
+- **Authorization is a hard stop.** No live request — not even an "enumerate"
+  call — runs before you confirm, in writing, the owner, the in-scope
+  accounts/subscriptions/projects and exclusions, prod vs non-prod, and which
+  action classes are allowed (read-only, state-changing privesc confirmation,
+  cracking, or test-account phishing).
+- **Least impact.** Read/describe/list by default; anything that changes state,
+  phishes, or could disrupt runs only inside the scope and only after you
+  confirm that step. No data destruction, no persistence left behind.
+- **It maps paths, not just settings.** Privilege-escalation and
+  lateral-movement chains across services and accounts (metadata-token theft,
+  `PassRole`/`AssumeRole`, service-account impersonation, Key Vault → token).
+- **Every finding pairs a fix with its detection** — the least-privilege change
+  and the log source (CloudTrail / Entra logs / Cloud Audit Logs) that catches
+  it. Evidence is the exact command plus output, secrets redacted.
+
+### Modes
+
+| Invocation | Scope |
+| :- | :- |
+| `/cloud-pentest aws` | An AWS account |
+| `/cloud-pentest azure` | An Azure / Entra ID tenant |
+| `/cloud-pentest gcp` | A GCP project/org |
+| `/cloud-pentest k8s` | A Kubernetes cluster / containers |
+
+## wifi-pentest
+
+Authorized Wi-Fi / wireless testing across 802.11 OPN/OWE/WEP/WPA/WPA2/WPA3-SAE
+and WPA-Enterprise (802.1X/EAP). Wireless testing is active by nature — it
+touches RF that reaches devices and people beyond the target — so the gate and
+the no-collateral rules come first.
+
+It is **not** for networks you cannot prove authorization for, and it does not
+jam, broadcast-deauth, or intercept third-party traffic.
+
+### What makes it different
+
+- **RF authorization is a hard stop.** No transmit, capture, deauth, or rogue AP
+  before you confirm, in writing, the owner, the in-scope SSID(s)/BSSID(s) and
+  client devices, the location, and the allowed classes. Offline cracking of a
+  capture you own is the one thing that needs no RF authorization.
+- **Targeted, never broad.** Deauth and downgrade frames go to one in-scope
+  BSSID/client — never a whole channel or area. No third-party traffic content
+  is read or stored; a weak key is proven by recovering the key, not by reading
+  victims' data.
+- **Attack by encryption type.** OPN/captive-portal, OWE, WEP, WPA/WPA2-PSK
+  (4-way handshake, PMKID, targeted deauth), WPS, WPA3-SAE (MFP check,
+  downgrade, online brute force), evil twin, and enterprise EAP (rogue-AP
+  credential capture, relay, stolen-CA).
+- **Proof, then stop.** Capture one handshake / confirm one PMKID / recover one
+  test key; no persistent rogue infrastructure. Each finding pairs a fix
+  (WPA3-SAE + PMF, EAP-TLS with server-cert validation, strong PSK, disable WPS)
+  with the WIDS signal that detects it, and the host is restored afterward.
+
+### Modes
+
+| Invocation | Scope |
+| :- | :- |
+| `/wifi-pentest` | On-air assessment of the in-scope network(s) |
+| `/wifi-pentest <SSID/BSSID>` | A named target |
+| `/wifi-pentest <capture.pcap>` | Offline work on a capture you own |
+
 ## Repository layout
 
 ```
 offsecskills/
 ├── .claude-plugin/marketplace.json
 ├── README.md · LICENSE
-└── plugins/secure-code-review/
-    ├── .claude-plugin/plugin.json
-    └── skills/secure-code-review/
-        ├── SKILL.md
-        └── references/   (methodology, taxonomies, languages/, app-types/)
+└── plugins/
+    ├── secure-code-review/
+    │   ├── .claude-plugin/plugin.json
+    │   └── skills/secure-code-review/
+    │       ├── SKILL.md
+    │       └── references/   (methodology, taxonomies, languages/, app-types/)
+    ├── cloud-pentest/
+    │   ├── .claude-plugin/plugin.json
+    │   └── skills/cloud-pentest/
+    │       ├── SKILL.md
+    │       └── references/   (authorization, methodology, aws, azure, gcp,
+    │                          kubernetes-containers, reporting)
+    └── wifi-pentest/
+        ├── .claude-plugin/plugin.json
+        └── skills/wifi-pentest/
+            ├── SKILL.md
+            └── references/   (authorization, setup-and-recon, attacks-by-
+                               encryption, enterprise-eap, cracking, reporting)
 ```
 
 ## Sources and attribution
 
-The skill paraphrases and cites, never copies. Each reference file names its
+Every skill paraphrases and cites, never copies. Each reference file names its
 sources and licenses. Principal sources:
 
 - **OWASP** — Top 10:2025, API Security Top 10 (2023), ASVS 5.0.0, MASVS 2.1.0 /
   MASTG, Top 10 for Business Logic Abuse (2025), Top 10 for LLM Applications,
-  Top 10 for Agentic Applications (2026), the Code Review Guide, and the Cheat
-  Sheet Series. OWASP content is licensed **CC BY-SA**.
-- **MITRE / CISA** — CWE Top 25 (2025) and KEV.
+  Top 10 for Agentic Applications (2026), the Code Review Guide, the Web
+  Security Testing Guide, and the Cheat Sheet Series. OWASP content is licensed
+  **CC BY-SA**.
+- **MITRE / CISA** — CWE Top 25 (2025) and KEV; the ATT&CK Cloud and Containers
+  matrices (technique names only).
+- **NIST** — SP 800-115 (testing methodology) and SP 800-153 (securing wireless
+  LANs); U.S. Government, public domain.
+- **CIS** — Benchmarks for AWS / Azure / GCP / Kubernetes (control references).
 - **SEI CERT** — secure coding standards (C, C++, Java).
 - **Google Engineering Practices** — the code-review quality pass.
+- **Vendor documentation** — AWS, Microsoft Azure / Entra ID, and Google Cloud
+  security and CLI docs; the tool projects named in the pentest references
+  (aircrack-ng, hashcat, hcxtools, eaphammer, AADInternals, ROADtools,
+  MicroBurst, and others), each under its own license.
+- **Cheat-Book** — the owner's own notes at https://cheatbook.tig00r.me, the
+  basis for the `cloud-pentest` and `wifi-pentest` techniques.
 
 Trademarks and taxonomies belong to their respective owners. This project is not
-affiliated with or endorsed by OWASP, MITRE, CISA, SEI, or Google.
+affiliated with or endorsed by OWASP, MITRE, CISA, NIST, CIS, SEI, Google,
+Amazon, or Microsoft.
 
 ## License
 
